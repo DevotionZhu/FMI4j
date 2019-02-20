@@ -1,5 +1,0 @@
-rootProject.name = "FMU-plugin"
-
-include "example"
-include "fmu-plugin"
-
