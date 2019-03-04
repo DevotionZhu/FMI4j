@@ -1,17 +1,8 @@
 import datetime
-import os
-import platform
 import shutil
 from fmpy import read_model_description, extract
 from fmpy.fmi2 import FMU2Slave
 
-
-def getOs():
-    sys = platform.system()
-    if sys == "Windows":
-        return "win64"
-    else:
-        return "linux64"
 
 
 class TestOptions:
@@ -21,15 +12,12 @@ class TestOptions:
         self.stop_time = stop_time
         self.vr = vr
 
-
-TEST_FMUs = os.environ.get('TEST_FMUs')
-
 options = [
 
     TestOptions(
-        "{}/FMI_2.0/CoSimulation/{}/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu".format(TEST_FMUs, getOs()),1E-4, 10, 47),
+        "../../fmus/2.0./cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu",1E-4, 10, 47),
     TestOptions(
-        "{}/FMI_2.0/CoSimulation/{}/20sim/4.6.4.8004/TorsionBar/TorsionBar.fmu".format(TEST_FMUs, getOs()), 1E-5, 12, 2)
+        "../../fmus/2.0/cs/20sim/4.6.4.8004/TorsionBar/TorsionBar.fmu", 1E-5, 12, 2)
 
 ]
 
