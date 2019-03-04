@@ -31,19 +31,11 @@ import no.ntnu.ihb.fmi4j.common.*
  */
 interface TypedScalarVariable<E> : ScalarVariable, TypedAttribute<E> {
 
-    fun read(variableAccessorProvider: FmuVariableAccessorProvider): FmuRead<E> {
-        return read(variableAccessorProvider.variableAccessor)
-    }
-
     /**
      * Accesses the FMU and returns the current value of the variable
      * represented by this valueReference, as well as the status
      */
     fun read(reader: FmuVariableReader): FmuRead<E>
-
-    fun write(variableAccessorProvider: FmuVariableAccessorProvider, value: E): FmiStatus {
-        return write(variableAccessorProvider.variableAccessor, value)
-    }
 
     /**
      * Accesses the FMU and writes the provided value to the FMU
@@ -75,31 +67,31 @@ interface TypedScalarVariable<E> : ScalarVariable, TypedAttribute<E> {
     fun asIntegerVariable(): IntegerVariable = when {
         this is IntegerVariable -> this
         else -> throw IllegalAccessException(
-                "Variable is not an ${IntegerVariable::class.java.simpleName}, but an ${this::class.java.simpleName}")
+                "Variable is not an ${ScalarVariable.INTEGER_TYPE}, but an $typeName!")
     }
 
     fun asRealVariable(): RealVariable = when {
         this is RealVariable -> this
         else -> throw throw IllegalAccessException(
-                "Variable is not an ${RealVariable::class.java.simpleName}, but an ${this::class.java.simpleName}")
+                "Variable is not an ${ScalarVariable.REAL_TYPE}, but an $typeName!")
     }
 
     fun asStringVariable(): StringVariable = when {
         this is StringVariable -> this
         else -> throw IllegalAccessException(
-                "Variable is not an ${StringVariable::class.java.simpleName}, but an ${this::class.java.simpleName}")
+                "Variable is not an ${ScalarVariable.STRING_TYPE}, but an $typeName!")
     }
 
     fun asBooleanVariable(): BooleanVariable = when {
         this is BooleanVariable -> this
         else -> throw IllegalAccessException(
-                "Variable is not an ${BooleanVariable::class.java.simpleName}, but an ${this::class.java.simpleName}")
+                "Variable is not an ${ScalarVariable.BOOLEAN_TYPE}, but an $typeName!")
     }
 
     fun asEnumerationVariable(): EnumerationVariable = when {
         this is EnumerationVariable -> this
         else -> throw IllegalAccessException(
-                "Variable is not an ${EnumerationVariable::class.java.simpleName}, but an ${this::class.java.simpleName}")
+                "Variable is not an ${ScalarVariable.ENUMERATION_TYPE}, but an $typeName!")
     }
 
 }
@@ -109,7 +101,7 @@ interface BoundedScalarVariable<E>: TypedScalarVariable<E>, BoundedTypedAttribut
 /**
  * @author Lars Ivar Hatledal
  */
-class IntegerVariable internal constructor(
+class IntegerVariable (
         v: ScalarVariable,
         a: IntegerAttribute
 ) : BoundedScalarVariable<Int>, ScalarVariable by v, IntegerAttribute by a {
@@ -144,8 +136,8 @@ class IntegerVariable internal constructor(
 /**
  * @author Lars Ivar Hatledal
  */
-class RealVariable internal constructor(
-        v: ScalarVariableImpl,
+class RealVariable (
+        v: ScalarVariable,
         a: RealAttribute
 ) : BoundedScalarVariable<Real>, ScalarVariable by v, RealAttribute by a {
 
@@ -173,7 +165,7 @@ class RealVariable internal constructor(
             quantity?.also { add("quantity=$quantity") }
             unit?.also { add("unit=$unit") }
             displayUnit?.also { add("displayUnit=$displayUnit") }
-            relativeQuantity?.also { add("relativeQuantity=$relativeQuantity") }
+            relativeQuantity.also { add("relativeQuantity=$relativeQuantity") }
             derivative?.also { add("derivative=$derivative") }
             description?.also { add("description=$description") }
             declaredType?.also { add("declaredType=$declaredType") }
@@ -188,8 +180,8 @@ class RealVariable internal constructor(
 /**
  * @author Lars Ivar Hatledal
  */
-class StringVariable internal constructor(
-        v: ScalarVariableImpl,
+class StringVariable (
+        v: ScalarVariable,
         a: StringAttribute
 ) : TypedScalarVariable<String>, ScalarVariable by v, StringAttribute by a {
 
@@ -223,8 +215,8 @@ class StringVariable internal constructor(
 /**
  * @author Lars Ivar Hatledal
  */
-class BooleanVariable internal constructor(
-        v: ScalarVariableImpl,
+class BooleanVariable (
+        v: ScalarVariable,
         a: BooleanAttribute
 ) : TypedScalarVariable<Boolean>, ScalarVariable by v, BooleanAttribute by a {
 
@@ -258,8 +250,8 @@ class BooleanVariable internal constructor(
 /**
  * @author Lars Ivar Hatledal
  */
-class EnumerationVariable internal constructor(
-        v: ScalarVariableImpl,
+class EnumerationVariable (
+        v: ScalarVariable,
         a: EnumerationAttribute
 ) : BoundedScalarVariable<Int>, ScalarVariable by v, EnumerationAttribute by a {
 
