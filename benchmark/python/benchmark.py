@@ -15,7 +15,7 @@ class TestOptions:
 options = [
 
     TestOptions(
-        "../../fmus/2.0./cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu",1E-4, 10, 47),
+        "../../fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu",1E-4, 10, 47),
     TestOptions(
         "../../fmus/2.0/cs/20sim/4.6.4.8004/TorsionBar/TorsionBar.fmu", 1E-5, 12, 2)
 
@@ -30,44 +30,47 @@ def main():
 
     unzipdir = extract(option.fmu_filename)
 
-    fmu = FMU2Slave(guid=model_description.guid,
-                    unzipDirectory=unzipdir,
-                    modelIdentifier=model_description.coSimulation.modelIdentifier,
-                    instanceName='instance1')
+    for i in range(0, 4):
 
-    # initialize
-    fmu.instantiate()
-    fmu.setupExperiment(tolerance=1E-4, startTime=0.0, stopTime=option.stop_time)
-    fmu.enterInitializationMode()
-    fmu.exitInitializationMode()
+        fmu = FMU2Slave(guid=model_description.guid,
+                        unzipDirectory=unzipdir,
+                        modelIdentifier=model_description.coSimulation.modelIdentifier,
+                        instanceName='instance' + str(i))
 
-    start = datetime.datetime.now()
+        # initialize
+        fmu.instantiate()
+        fmu.setupExperiment(tolerance=1E-4, startTime=0.0, stopTime=option.stop_time)
+        fmu.enterInitializationMode()
+        fmu.exitInitializationMode()
 
-    i = 0
-    t = 0.0
-    sum = 0.0
-    # simulation loop
-    while t <= (option.stop_time-option.step_size):
+        start = datetime.datetime.now()
 
-        i += 1
-        # perform one step
-        fmu.doStep(currentCommunicationPoint=t, communicationStepSize=option.step_size)
+        i = 0
+        t = 0.0
+        sum = 0.0
+        # simulation loop
+        while t <= (option.stop_time-option.step_size):
 
-        sum += fmu.getReal([option.vr])[0]
+            i += 1
+            # perform one step
+            fmu.doStep(currentCommunicationPoint=t, communicationStepSize=option.step_size)
 
-        # advance the time
-        t += option.step_size
+            sum += fmu.getReal([option.vr])[0]
 
-    end = datetime.datetime.now()
-    print("sum={}, iter={}".format(sum, i))
+            # advance the time
+            t += option.step_size
 
-    delta = end - start
-    print("{}ms".format(int(delta.total_seconds() * 1000)))
+        end = datetime.datetime.now()
+        print("sum={}, iter={}".format(sum, i))
 
-    try:
-        fmu.terminate()
-    except OSError:
-        pass
+        delta = end - start
+        print("{}ms".format(int(delta.total_seconds() * 1000)))
+
+        try:
+            fmu.terminate()
+        except OSError:
+            pass
+
     fmu.freeInstance()
 
     # clean up

@@ -19,13 +19,6 @@ data class TestOptions(
 private val options = listOf(
         TestOptions(
                 fmuFile = TestFMUs.fmi20().cs()
-                        .vendor("FMUSDK").version("2.0.4")
-                        .name("bouncingBall").file(),
-                stepSize = 1E-2,
-                stopTime = 100.0,
-                vr = 0),
-        TestOptions(
-                fmuFile = TestFMUs.fmi20().cs()
                         .vendor("20sim").version("4.6.4.8004")
                         .name("TorsionBar").file(),
                 stepSize = 1E-5,
@@ -46,7 +39,7 @@ object Benchmark {
     @JvmStatic
     fun main(args: Array<String>) {
 
-        for (option in intArrayOf(1).map { options[it] }) {
+        for (option in intArrayOf(0).map { options[it] }) {
 
             LOG.info("Running FMU '${option.fmuFile}'")
 
